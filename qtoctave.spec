@@ -6,8 +6,8 @@ Group:          Sciences/Mathematics
 License:        GPL
 URL:            http://qtoctave.wordpress.com/
 Source0:        https://forja.rediris.es/frs/download.php/396/qtoctave-%{version}.tar.gz
-BuildRequires:        desktop-file-utils
-BuildRequires:        qt4-devel
+BuildRequires:  desktop-file-utils
+BuildRequires:  qt4-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
@@ -66,4 +66,3 @@ export QTDIR=
 %{_datadir}/applications/%{name}.desktop
 %defattr(-,root,root,0755)
 %{_datadir}/%{name}
-
