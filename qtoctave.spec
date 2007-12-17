@@ -8,7 +8,6 @@ URL:            http://qtoctave.wordpress.com/
 Source0:        https://forja.rediris.es/frs/download.php/396/qtoctave-%{version}.tar.gz
 BuildRequires:  desktop-file-utils
 BuildRequires:  qt4-devel
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 QtOctave is a frontend for Octave based on Qt4.
