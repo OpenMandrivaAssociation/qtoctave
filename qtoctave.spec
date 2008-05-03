@@ -2,7 +2,7 @@
 
 Name:           qtoctave
 Version:        0.6.3
-Release:        %mkrel 1
+Release:        %mkrel 2
 Summary:        Frontend for Octave
 Group:          Sciences/Mathematics
 License:        GPLv2+
