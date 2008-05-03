@@ -1,13 +1,16 @@
+%define _requires_exceptions \/usr\/bin\/octave
+
 Name:           qtoctave
 Version:        0.6.3
 Release:        %mkrel 1
 Summary:        Frontend for Octave
 Group:          Sciences/Mathematics
-License:        GPL
+License:        GPLv2+
 URL:            http://qtoctave.wordpress.com/
 Source0:        https://forja.rediris.es/frs/download.php/396/qtoctave-%{version}.tar.gz
 BuildRequires:  desktop-file-utils
 BuildRequires:  qt4-devel
+Requires:	octave
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
