@@ -2,17 +2,23 @@
 %define _default_patch_fuzz 3
 
 Name:           qtoctave
-Version:        0.8.1
-Release:        %mkrel 2
+Version:        0.8.2
+Release:        %mkrel 1
 Summary:        Frontend for Octave
 Group:          Sciences/Mathematics
 License:        GPLv2+
 URL:            http://qtoctave.wordpress.com/
 Source0:        https://forja.rediris.es/frs/download.php/744/qtoctave-%{version}.tar.gz
-Patch0:         qtoctave-build-out-of-source.patch
-Patch1:         qtoctave-use-octave-doc.patch
-Patch2:         qtoctave-move-doc-under-doc.patch
-Patch3:         qtoctave-add_missing_includes.patch
+# Debian patches
+Patch0:		qtoctave-add_missing_includes.patch
+Patch1:		qtoctave-build-out-of-source.patch
+Patch2:		qtoctave-font-option-in-png-export.patch
+Patch3:		qtoctave-install_easyplot_as_target.patch
+Patch4:		qtoctave-move_doc_under_doc.patch
+Patch5:		qtoctave-use_cstdio_header.patch
+Patch6:		qtoctave-use_octave_htmldoc.patch
+# fhimpe: fix detection of QT versions > 4.5
+Patch7:		qtoctave-fix-qt4.6-detection.patch
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
 Requires:	octave
@@ -25,11 +31,15 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 QtOctave is a frontend for Octave based on Qt4.
 
 %prep
-%setup -q -n %{name}-%{version}/%{name}
+%setup -q -n %{name}-%{version}/
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1 
 
 %{__perl} -pi -e 's/\r$//g' readme.txt
 
@@ -47,7 +57,7 @@ EOF
 
 %build
 %{cmake} -DCMAKE_SKIP_RPATH:STRING="ON"  
-%{make}
+make
 
 %install
 %{__rm} -rf %{buildroot}
@@ -76,8 +86,13 @@ popd
 
 %files
 %defattr(0644,root,root,0755)
-%doc LICENSE_GPL.txt leeme.txt news.txt readme.txt
+%doc LICENSE_GPL.txt leeme.txt readme.txt
 %attr(0755,root,root) %{_bindir}/qtoctave
+%attr(0755,root,root) %{_bindir}/easy_plot
+%attr(0755,root,root) %{_bindir}/qtjs
+%attr(0755,root,root) %{_bindir}/qtoctave_pkg
+%attr(0755,root,root) %{_bindir}/simplercs
+%attr(0755,root,root) %{_bindir}/xmlwidget
 %{_iconsdir}/hicolor/64x64/apps/qtoctave.png
 %{_datadir}/applications/*%{name}.desktop
 %defattr(-,root,root,0755)
