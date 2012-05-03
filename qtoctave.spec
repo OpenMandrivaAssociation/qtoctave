@@ -1,99 +1,72 @@
-%define _requires_exceptions \/usr\/bin\/octave
-%define _default_patch_fuzz 3
-
 Name:           qtoctave
-Version:        0.8.2
-Release:        %mkrel 3
+Version:        0.10.1
+Release:        %mkrel 1
 Summary:        Frontend for Octave
 Group:          Sciences/Mathematics
 License:        GPLv2+
 URL:            http://qtoctave.wordpress.com/
 Source0:        https://forja.rediris.es/frs/download.php/744/qtoctave-%{version}.tar.gz
-# Debian patches
-Patch0:		qtoctave-add_missing_includes.patch
-Patch1:		qtoctave-build-out-of-source.patch
-Patch2:		qtoctave-font-option-in-png-export.patch
-Patch3:		qtoctave-install_easyplot_as_target.patch
-Patch4:		qtoctave-move_doc_under_doc.patch
-Patch5:		qtoctave-use_cstdio_header.patch
-Patch6:		qtoctave-use_octave_htmldoc.patch
-# fhimpe: fix detection of QT versions > 4.5
-Patch7:		qtoctave-fix-qt4.6-detection.patch
+
+# place qtoctave_doc and qtoctave-utils in qtoctave datadir
+Patch0:         qtoctave-doc-path.patch
+# fix *.m filters in file dialogs (debian#620062, patch by Sébastien Villemot)
+Patch1:         qtoctave-0.10.1-filedialog-filters.patch
+# fix crash when closing a dock tool within the first 5 seconds (#722986)
+# (a NULL pointer dereference caused by a race condition between the user
+# closing the tool and the timer setting the initial positions, prevented by
+# using a QWeakPointer<QWidget> instead of a raw QWidget *)
+Patch2:         qtoctave-0.10.1-initialposition.patch
+# fix Octave help not working (#737297)
+# (system(command, 1, "async"); is nonsense, use system(command, 0, "async");)
+Patch3:         qtoctave-0.10.1-qtinfo.patch
+Patch4:		no-native-menubars.patch
+
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
-Requires:	octave
+Requires:	octave >= 3.2.0
+Requires:	octave-doc >= 3.2.0
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  qt4-devel
+%{?_qt4_version:Requires: qt4%{?_isa} >= %{_qt4_version}}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
-QtOctave is a frontend for Octave based on Qt4.
+Besides offering an attractive front-end to GNU Octave, an
+environment for numerical computation highly compatible with MATLAB,
+QtOctave currently also features matrix data entry and display and
+some GUI shortcuts to frequently used Octave functions.
 
 %prep
-%setup -q -n %{name}-%{version}/
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%setup -q -n %{name}-%{version}
+%patch0 -p1 -b .doc-path
+%patch1 -p1 -b .filedialog-filters
+%patch2 -p1 -b .initialposition
+%patch3 -p1 -b .qtinfo
 %patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1 
 
-%{__perl} -pi -e 's/\r$//g' readme.txt
+find xmlwidget/qt4/src/ -type f -exec chmod a-x {} \;
+find easy_plot/src/ -type f -exec chmod a-x {} \;
 
-# Desktop file
-%{__cat} > %{name}.desktop << EOF
-[Desktop Entry]
-Name=QtOctave
-Comment=Frontend for Octave
-Exec=qtoctave
-Terminal=false
-Icon=qtoctave
-Type=Application
-Categories=Education;Math;Science;
-EOF
 
 %build
-%{cmake} -DCMAKE_SKIP_RPATH:STRING="ON"  
-make
+cmake "-DCMAKE_INSTALL_PREFIX:PATH=%{_prefix}"
+%make
 
 %install
-%{__rm} -rf %{buildroot}
-pushd build
-%{makeinstall_std}
-popd
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR="$RPM_BUILD_ROOT"
 
-%if 0
-%{__chmod} 0755 %{buildroot}%{_datadir}/%{name}/menus/Analysis/Integrate.m \
-                %{buildroot}%{_datadir}/%{name}/menus/Analysis/Integrate
-%endif
-
-%{__mkdir_p} %{buildroot}%{_datadir}/applications
-%{_bindir}/desktop-file-install --dir %{buildroot}%{_datadir}/applications %{name}.desktop
 
 %clean
 %{__rm} -rf %{buildroot}
 
-%post
-%{update_desktop_database}
-#%%update_icon_cache hicolor
-
-%postun
-%{clean_desktop_database}
-#%%clean_icon_cache hicolor
-
 %files
 %defattr(0644,root,root,0755)
-%doc LICENSE_GPL.txt leeme.txt readme.txt
-%attr(0755,root,root) %{_bindir}/qtoctave
-%attr(0755,root,root) %{_bindir}/easy_plot
-%attr(0755,root,root) %{_bindir}/qtjs
-%attr(0755,root,root) %{_bindir}/qtoctave_pkg
-%attr(0755,root,root) %{_bindir}/simplercs
-%attr(0755,root,root) %{_bindir}/xmlwidget
-%{_iconsdir}/hicolor/64x64/apps/qtoctave.png
-%{_datadir}/applications/*%{name}.desktop
-%defattr(-,root,root,0755)
-%{_datadir}/%{name}
+%defattr(-,root,root,-)
+%doc readme.txt leeme.txt LICENSE_GPL.txt
+%{_bindir}/*
+%{_datadir}/%{name}/*
+%{_datadir}/applications/*.desktop
+%{_datadir}/icons/hicolor/64x64/apps/*
+%exclude %{_datadir}/doc/octave-html
