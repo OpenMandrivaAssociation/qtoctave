@@ -1,0 +1,10 @@
+diff -ur qtoctave-0.10.1/qtoctave/src/scripts_octave/qtinfo.m qtoctave-0.10.1-qtinfo/qtoctave/src/scripts_octave/qtinfo.m
+--- qtoctave-0.10.1/qtoctave/src/scripts_octave/qtinfo.m	2011-01-06 22:48:08.000000000 +0100
++++ qtoctave-0.10.1-qtinfo/qtoctave/src/scripts_octave/qtinfo.m	2011-10-07 00:48:33.000000000 +0200
+@@ -1,5 +1,5 @@
+ function qtinfo()
+ 	command=sprintf("qtoctave-info-reader %s > /dev/null", info_file);
+ 	printf("Starting info: %s\n", command);
+-	system(command, 1, "async");
++	system(command, 0, "async");
+ endfunction
