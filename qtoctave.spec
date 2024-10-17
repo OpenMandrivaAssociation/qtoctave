@@ -4,7 +4,7 @@ Release:        2
 Summary:        Frontend for Octave
 Group:          Sciences/Mathematics
 License:        GPLv2+
-URL:            http://qtoctave.wordpress.com/
+URL:            https://qtoctave.wordpress.com/
 Source0:        https://forja.rediris.es/frs/download.php/744/qtoctave-%{version}.tar.gz
 
 # place qtoctave_doc and qtoctave-utils in qtoctave datadir
